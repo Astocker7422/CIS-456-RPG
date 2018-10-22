@@ -4,5 +4,6 @@ using UnityEngine;
 
 public class EnemyWeapon : MonoBehaviour
 {
+    public Enemy enemy;
     public float power;
 }

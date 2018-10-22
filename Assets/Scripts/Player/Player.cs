@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
     public Quaternion respawnRotation;
     public Slider healthBar;
     public bool isPaused;
+    public Weapon weapon;
+    public Animator anim;
 
 
     private float currHealth;
@@ -25,23 +27,20 @@ public class Player : MonoBehaviour
     private float hitTimer;
     private bool canHit;
     private bool isRunning;
-    private Animator anim;
     private bool isDead;
-    private float deathTimer;
-    private float deathTime;
+    private bool isMoving;
 
     void Start()
     {
         currHealth = maxHealth;
         rigid = GetComponent<Rigidbody>();
-        hitTime = 0.4f;
+        hitTime = 1f;
         hitTimer = 0;
         canHit = true;
         isRunning = false;
         anim = GetComponentInChildren<Animator>();
         isDead = false;
-        deathTime = 5;
-        deathTimer = 0;
+        isMoving = false;
     }
 
     void Update()
@@ -59,7 +58,7 @@ public class Player : MonoBehaviour
                 isRunning = false;
             }
 
-            if(Input.GetMouseButtonDown(0))
+            if(Input.GetMouseButtonDown(0) && !isMoving)
             {
                 anim.SetBool("IsAttacking",true);
             }
@@ -71,9 +70,9 @@ public class Player : MonoBehaviour
             float horizontal = Input.GetAxis("Horizontal") * speed;
             float vertical = Input.GetAxis("Vertical") * speed;
 
-            Movement(horizontal, vertical);
+            if(!weapon.isSwinging) Movement(horizontal, vertical);
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) && !weapon.isSwinging)
             {
                 if (isGrounded)
                 {
@@ -82,27 +81,12 @@ public class Player : MonoBehaviour
                 }
             }
         }
-        if (deathTimer >= deathTime)
-        {
-            transform.position = respawn;
-            transform.rotation = respawnRotation;
-            currHealth = maxHealth;
-            //healthBar.value = maxHealth;
-
-            isDead = false;
-            deathTimer = 0;
-        }
     }
 
     void LateUpdate()
     {
         hitTimer += Time.deltaTime;
         if (hitTimer > hitTime) canHit = true;
-
-        if (isDead)
-        {
-            deathTimer += Time.deltaTime;
-        }
     }
 
     IEnumerator Jump()
@@ -128,7 +112,6 @@ public class Player : MonoBehaviour
                 anim.SetBool("IsWalking", true);
                 anim.SetFloat("Blend", horizontal);
             }
-
         }
         else
         {
@@ -153,10 +136,10 @@ public class Player : MonoBehaviour
     void OnCollisionEnter(Collision coll)
     {
         rigid.angularVelocity = new Vector3(0, 0, 0);
-        if (coll.gameObject.CompareTag("Enemy"))
-        {
-            TakeDamage(coll.collider.gameObject.GetComponent<Enemy>().power);
-        }
+        //if (coll.gameObject.CompareTag("Enemy"))
+        //{
+        //    TakeDamage(coll.collider.gameObject.GetComponent<Enemy>().power);
+        //}
     }
 
     void TakeDamage(float damage)
@@ -166,14 +149,14 @@ public class Player : MonoBehaviour
         if (isDead || isPaused) return;
 
         currHealth -= damage;
-        //healthBar.value = currHealth;
+        healthBar.value = currHealth;
 
         hitTimer = 0;
         canHit = false;
 
         if (currHealth <= 0)
         {
-            isDead = true;
+            StartCoroutine(Die());
         }
     }
 
@@ -196,8 +179,7 @@ public class Player : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Enemy Weapon"))
         {
-            GameObject enemy = other.gameObject.transform.parent.gameObject;
-            if (enemy.CompareTag("Enemy")) TakeDamage(other.gameObject.transform.parent.GetComponent<Enemy>().power);
+            TakeDamage(other.gameObject.GetComponent<EnemyWeapon>().enemy.power);
 
             float force = 2;
             float height = 2;
@@ -205,5 +187,31 @@ public class Player : MonoBehaviour
             Vector3 dir = new Vector3(enemyDir.x * force, height, enemyDir.z * force);
             rigid.AddForce(dir, ForceMode.Impulse);
         }
+    }
+
+    IEnumerator Die()
+    {
+        isDead = true;
+        anim.SetBool("IsDying", true);
+
+        if (anim.GetBool("IsWalking"))
+        {
+            anim.SetBool("IsWalking", false);
+        }
+
+        if (anim.GetBool("IsAttacking"))
+        {
+            anim.SetBool("IsAttacking", false);
+        }
+
+        yield return new WaitForSeconds(5);
+
+        transform.position = respawn;
+        transform.rotation = respawnRotation;
+        currHealth = maxHealth;
+        healthBar.value = maxHealth;
+        anim.SetBool("IsDying", false);
+
+        isDead = false;
     }
 }

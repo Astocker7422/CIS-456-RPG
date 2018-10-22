@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour
     public GameObject player;
     public float attackDistance;
     public EnemyWeapon weapon;
-    //public GameObject healthBar;
+    public GameObject healthBar;
 
     private float currHealth;
     private float hitTime;
@@ -21,6 +21,7 @@ public class Enemy : MonoBehaviour
     private float attackTimer;
     private bool canHit;
     private bool isAttacking;
+    private bool isDead;
 
     void Start()
     {
@@ -31,41 +32,40 @@ public class Enemy : MonoBehaviour
         attackTimer = attackTime;
         canHit = true;
         isAttacking = false;
+        isDead = false;
 
         weapon.power = 0;
     }
 
     void Update()
     {
-        if (Vector3.Distance(transform.position, player.transform.position) <= attackDistance)
+        if (!isDead)
         {
-            //Debug.Log("In Attack Range");
-            //Debug.Log(isAttacking + " " + attackTimer + " / " + attackTime);
-            if (isAttacking == false && attackTimer >= attackTime)
+            if (Vector3.Distance(transform.position, player.transform.position) <= attackDistance)
             {
-                //Debug.Log("ATTACK!");
-                GetComponentInChildren<Animator>().SetBool("isAttacking", true);
-                weapon.power = power;
-                isAttacking = true;
-                attackTimer = 0;
+                if (isAttacking == false && attackTimer >= attackTime)
+                {
+                    GetComponentInChildren<Animator>().SetBool("isAttacking", true);
+                    weapon.power = power;
+                    isAttacking = true;
+                    attackTimer = 0;
+                }
+                else
+                {
+                    if (attackTimer > 1)
+                    {
+                        GetComponentInChildren<Animator>().SetBool("isAttacking", false);
+                        weapon.power = 0;
+                        isAttacking = false;
+                    }
+                }
             }
             else
             {
-                //Debug.Log("Waiting To Attack");
-                if (attackTimer > 1)
-                {
-                    GetComponentInChildren<Animator>().SetBool("isAttacking", false);
-                    weapon.power = 0;
-                    isAttacking = false;
-                }
+                GetComponentInChildren<Animator>().SetBool("isAttacking", false);
+                weapon.power = 0;
+                isAttacking = false;
             }
-        }
-        else
-        {
-            //Debug.Log("Outside Attack Range");
-            GetComponentInChildren<Animator>().SetBool("isAttacking", false);
-            weapon.power = 0;
-            isAttacking = false;
         }
     }
 
@@ -81,18 +81,17 @@ public class Enemy : MonoBehaviour
     {
         if (!canHit) return;
 
-        //if (!healthBar.activeInHierarchy) healthBar.SetActive(true);
+        if (!healthBar.activeInHierarchy) healthBar.SetActive(true);
 
         currHealth -= damage;
-        //healthBar.GetComponent<Slider>().value = currHealth;
+        healthBar.GetComponent<Slider>().value = currHealth;
 
         hitTimer = 0;
         canHit = false;
 
         if (currHealth <= 0)
         {
-            GetComponentInChildren<Animator>().SetBool("isDying", true);
-            //Destroy(this.gameObject);
+            StartCoroutine(Die());
         }
     }
 
@@ -113,5 +112,15 @@ public class Enemy : MonoBehaviour
 
         //Move towards target
         transform.position += transform.forward * speed * Time.deltaTime;
+    }
+
+    IEnumerator Die()
+    {
+        GetComponentInChildren<Animator>().SetBool("isDying", true);
+        isDead = true;
+
+        yield return new WaitForSeconds(5);
+
+        Destroy(this.gameObject);
     }
 }
