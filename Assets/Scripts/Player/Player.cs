@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
 
 
     private float currHealth;
+    private float defaultSpeed;
     private bool isGrounded;
     private float floorDist;
     private Transform weaponTransform;
@@ -26,18 +27,17 @@ public class Player : MonoBehaviour
     private float hitTime;
     private float hitTimer;
     private bool canHit;
-    private bool isRunning;
     private bool isDead;
     private bool isMoving;
 
     void Start()
     {
         currHealth = maxHealth;
+        defaultSpeed = speed;
         rigid = GetComponent<Rigidbody>();
         hitTime = 1f;
         hitTimer = 0;
         canHit = true;
-        isRunning = false;
         anim = GetComponentInChildren<Animator>();
         isDead = false;
         isMoving = false;
@@ -47,15 +47,13 @@ public class Player : MonoBehaviour
     {
         if (!isPaused && !isDead)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift) && !isRunning)
+            if (Input.GetKey(KeyCode.LeftShift))
             {
-                speed *= 2;
-                isRunning = true;
+                speed = defaultSpeed * 2;
             }
-            if (Input.GetKeyUp(KeyCode.CapsLock) && isRunning)
+            else
             {
-                speed /= 2;
-                isRunning = false;
+                speed = defaultSpeed;
             }
 
             if(Input.GetMouseButtonDown(0) && !isMoving)

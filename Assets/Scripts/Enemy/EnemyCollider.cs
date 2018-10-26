@@ -16,7 +16,7 @@ public class EnemyCollider : MonoBehaviour
 
     void Update()
     {
-        if (playerInSight) enemy.moveToPlayer();
+        if (playerInSight) enemy.MoveToPlayer();
     }
 
     void OnTriggerEnter(Collider other)
@@ -24,6 +24,7 @@ public class EnemyCollider : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             playerInSight = true;
+            enemy.inCombat = true;
         }
     }
 
@@ -32,6 +33,7 @@ public class EnemyCollider : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             playerInSight = false;
+            enemy.inCombat = false;
             enemy.GetComponent<Animator>().SetBool("isMoving", false);
         }
     }

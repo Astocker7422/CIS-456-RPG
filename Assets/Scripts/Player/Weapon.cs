@@ -31,15 +31,12 @@ public class Weapon : MonoBehaviour
 
     void OnTriggerEnter(Collider coll)
     {
-        Debug.Log("fist trigger entered enemy");
         //If the weapon is being used,
         if (isSwinging)
         {
-            Debug.Log("weapon is swinging");
             //If an enemy enters the weapon's trigger,
             if (coll.gameObject.CompareTag("Enemy"))
             {
-                Debug.Log("Enemy Hit");
                 //Apply damage to the enemy
                 coll.gameObject.GetComponent<Enemy>().TakeDamage(player.power);
             }
