@@ -58,7 +58,7 @@ public class Enemy : MonoBehaviour
         isAttacking = false;
         isDead = false;
         inCombat = false;
-        destTime = 6;
+        destTime = 3;
         destTimer = 0;
         wanderDestination = transform.position;
 
@@ -182,6 +182,12 @@ public class Enemy : MonoBehaviour
             return;
         }
 
+        if(isDead)
+        {
+            return;
+        }
+
+        GetComponentInChildren<Animator>().SetBool("isWalking", false);
         GetComponentInChildren<Animator>().SetBool("isMoving", true);
 
         //Look at target

@@ -38,8 +38,11 @@ public class SpinControl : MonoBehaviour
     {
         if(input != null)
         {
+            preValue = value;
             value = int.Parse(input.text);
             value += delta;
+            input.text = value.ToString();
+            RangeCheck();
         }
     }
 
@@ -73,14 +76,18 @@ public class SpinControl : MonoBehaviour
                     return;
                 }
             }
-            //commListeners
+            
+            if((commListeners != null) && (value != preValue))
+            {
+                commListeners(this, value - preValue);
+            }
         }
     }
 
     //Changes value on object when changed in editor
     private void OnValidate()
     {
-        input = transform.Find("Text").GetComponent<TMPro.TMP_InputField>();
+        input = transform.Find("Value Text").GetComponent<TMPro.TMP_InputField>();
         input.text = value.ToString();
     }
 

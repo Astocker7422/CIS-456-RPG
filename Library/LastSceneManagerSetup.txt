@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/Console.unity
+- path: Assets/Scenes/Outskirts.unity
   isLoaded: 1
   isActive: 1

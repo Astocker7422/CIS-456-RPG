@@ -19,8 +19,13 @@ public class EnemyCount : MonoBehaviour
     //Increment the enemy count on the UI
 	public void IncrementCount()
     {
-        count++;
+        if(text == null)
+        {
+            text = GetComponent<TextMeshProUGUI>();
+        }
 
+        count++;
+        
         text.text = "Enemies: " + count.ToString();
     }
 

@@ -45,7 +45,7 @@ public class CameraFollow : MonoBehaviour
 
             if (Physics.Raycast(wallRay, out hit, distance))
             {
-                if (!hit.collider.gameObject.CompareTag("Player"))
+                if (!hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.CompareTag("Enemy"))
                 {
                     transform.position = hit.point;
                 }
