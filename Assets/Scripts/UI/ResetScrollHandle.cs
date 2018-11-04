@@ -7,7 +7,7 @@ public class ResetScrollHandle : MonoBehaviour
 {
     private void Start()
     {
-        transform.GetComponent<Scrollbar>().size = 1;
-        transform.GetComponent<Scrollbar>().value = 0;
+        transform.FindDeepChild("Scrollbar").GetComponent<Scrollbar>().size = 1;
+        transform.FindDeepChild("Scrollbar").GetComponent<Scrollbar>().value = 0;
     }
 }
