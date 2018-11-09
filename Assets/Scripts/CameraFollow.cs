@@ -47,7 +47,7 @@ public class CameraFollow : MonoBehaviour
             {
                 if (!hit.collider.gameObject.CompareTag("Player") && !hit.collider.gameObject.CompareTag("Enemy"))
                 {
-                    if (!hit.collider.gameObject.CompareTag("Weapon") && !hit.collider.gameObject.CompareTag("EnemyWeapon"))
+                    if (!hit.collider.gameObject.CompareTag("Weapon") && !hit.collider.gameObject.CompareTag("Enemy Weapon"))
                     {
                         transform.position = hit.point;
                     }

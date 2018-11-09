@@ -10,6 +10,8 @@ public class Enemy : MonoBehaviour
     public float turnSpeed;
     public float power;
 
+    public int expValue;
+
     public GameObject player;
 
     public float attackDistance;
@@ -205,6 +207,8 @@ public class Enemy : MonoBehaviour
         isDead = true;
 
         enemyCount.DecrementCount();
+
+        player.GetComponent<Player>().IncrementExp(expValue);
 
         yield return new WaitForSeconds(5);
 

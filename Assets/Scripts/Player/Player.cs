@@ -16,6 +16,8 @@ public class Player : MonoBehaviour
     public bool isPaused;
     public Weapon weapon;
     public Animator anim;
+    public Slider expBar;
+    public GameObject statCanvas;
 
 
     private float currHealth;
@@ -27,8 +29,14 @@ public class Player : MonoBehaviour
     private float hitTime;
     private float hitTimer;
     private bool canHit;
+    private float jumpTimer;
+    private float jumpTime;
     private bool isDead;
     private bool isMoving;
+    private int level;
+    private int exp;
+    private int expTilLvl;
+    private TMPro.TextMeshProUGUI expText;
 
     void Start()
     {
@@ -39,8 +47,22 @@ public class Player : MonoBehaviour
         hitTimer = 0;
         canHit = true;
         anim = GetComponentInChildren<Animator>();
+        jumpTimer = 0.6f;
+        jumpTime = jumpTimer;
         isDead = false;
         isMoving = false;
+
+        expText = expBar.gameObject.transform.Find("Value Text").GetComponent<TMPro.TextMeshProUGUI>();
+
+        level = 1;
+
+        exp = 0;
+        expTilLvl = 1000;
+
+        expBar.maxValue = expTilLvl;
+        expBar.value = exp;
+
+        expText.text = exp + " / " + expTilLvl;
     }
 
     void Update()
@@ -72,10 +94,11 @@ public class Player : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Space) && !weapon.isSwinging)
             {
-                if (isGrounded)
+                if (isGrounded && jumpTimer >= jumpTime)
                 {
                     isGrounded = false;
                     StartCoroutine(Jump());
+                    jumpTimer = 0;
                 }
             }
         }
@@ -85,6 +108,8 @@ public class Player : MonoBehaviour
     {
         hitTimer += Time.deltaTime;
         if (hitTimer > hitTime) canHit = true;
+
+        jumpTimer += Time.deltaTime;
     }
 
     IEnumerator Jump()
@@ -92,7 +117,7 @@ public class Player : MonoBehaviour
         anim.SetBool("IsJumping", true);
 
         yield return new WaitForSeconds(0.5f);
-
+        
         rigid.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
     }
 
@@ -173,6 +198,16 @@ public class Player : MonoBehaviour
         }
     }
 
+    void OnCollisionExit(Collision coll)
+    {
+        rigid.angularVelocity = new Vector3(0, 0, 0);
+
+        if (coll.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
+        }
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Enemy Weapon"))
@@ -211,5 +246,59 @@ public class Player : MonoBehaviour
         anim.SetBool("IsDying", false);
 
         isDead = false;
+    }
+
+    public int GetLevel()
+    {
+        return level;
+    }
+
+    public void IncrementExp(int points)
+    {
+        exp += points;
+
+        if(exp >= expTilLvl)
+        {
+            exp = 0;
+            expTilLvl *= 2;
+
+            expBar.maxValue = expTilLvl;
+
+            ActivateStatCanvas();
+        }
+
+        expBar.value = exp;
+
+        expText.text = exp + " / " + expTilLvl;
+    }
+
+    private void ActivateStatCanvas()
+    {
+        Time.timeScale = 0;
+        isPaused = true;
+
+        statCanvas.SetActive(true);
+
+        LevelUpCanvas statScript = statCanvas.GetComponent<LevelUpCanvas>();
+
+        statScript.SetHP((int) maxHealth);
+        statScript.SetSpeed((int) speed);
+        statScript.SetPower((int) power);
+        statScript.SetJump((int) (jumpSpeed / 10));
+    }
+
+    public void DeactivateStatCanvas()
+    {
+        LevelUpCanvas statScript = statCanvas.GetComponent<LevelUpCanvas>();
+
+        maxHealth = statScript.GetHP();
+        speed = statScript.GetSpeed();
+        power = statScript.GetPower();
+        jumpSpeed = statScript.GetJump() * 10;
+
+        statCanvas.SetActive(false);
+
+        Time.timeScale = 1;
+        isPaused = false;
     }
 }
