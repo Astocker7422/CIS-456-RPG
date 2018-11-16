@@ -130,7 +130,7 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if (!canHit) return;
+        if (!canHit || isDead) return;
 
         if (!healthBar.activeInHierarchy) healthBar.SetActive(true);
 

@@ -360,7 +360,7 @@ MonoBehaviour:
   speed: 5
   turnSpeed: 100
   power: 1
-  expValue: 1000
+  expValue: 200
   player: {fileID: 2095440841}
   attackDistance: 1.5
   wanderDistance: 5

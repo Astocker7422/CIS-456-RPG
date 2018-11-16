@@ -40,6 +40,11 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        maxHealth = PlayerStats.Instance().HP;
+        speed = PlayerStats.Instance().Speed;
+        power = PlayerStats.Instance().Power;
+        jumpSpeed = PlayerStats.Instance().Jump * 10;
+
         currHealth = maxHealth;
         defaultSpeed = speed;
         rigid = GetComponent<Rigidbody>();
@@ -54,10 +59,10 @@ public class Player : MonoBehaviour
 
         expText = expBar.gameObject.transform.Find("Value Text").GetComponent<TMPro.TextMeshProUGUI>();
 
-        level = 1;
+        level = PlayerStats.Instance().Level;
 
-        exp = 0;
-        expTilLvl = 1000;
+        exp = PlayerStats.Instance().CurrExp;
+        expTilLvl = PlayerStats.Instance().MaxExp;
 
         expBar.maxValue = expTilLvl;
         expBar.value = exp;
@@ -256,13 +261,20 @@ public class Player : MonoBehaviour
     public void IncrementExp(int points)
     {
         exp += points;
+        PlayerStats.Instance().CurrExp = exp;
 
         if(exp >= expTilLvl)
         {
             exp = 0;
+            PlayerStats.Instance().CurrExp = exp;
+
             expTilLvl *= 2;
+            PlayerStats.Instance().MaxExp = expTilLvl;
 
             expBar.maxValue = expTilLvl;
+
+            level++;
+            PlayerStats.Instance().Level = level;
 
             ActivateStatCanvas();
         }
@@ -291,10 +303,19 @@ public class Player : MonoBehaviour
     {
         LevelUpCanvas statScript = statCanvas.GetComponent<LevelUpCanvas>();
 
-        maxHealth = statScript.GetHP();
-        speed = statScript.GetSpeed();
-        power = statScript.GetPower();
-        jumpSpeed = statScript.GetJump() * 10;
+        PlayerStats.Instance().HP = statScript.GetHP();
+        PlayerStats.Instance().Speed = statScript.GetSpeed();
+        PlayerStats.Instance().Power = statScript.GetPower();
+        PlayerStats.Instance().Jump = statScript.GetJump();
+
+
+        maxHealth = PlayerStats.Instance().HP;
+        healthBar.maxValue = maxHealth;
+        healthBar.value = currHealth;
+
+        speed = PlayerStats.Instance().Speed;
+        power = PlayerStats.Instance().Power;
+        jumpSpeed = PlayerStats.Instance().Jump * 10;
 
         statCanvas.SetActive(false);
 
