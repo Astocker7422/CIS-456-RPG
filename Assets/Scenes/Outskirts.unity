@@ -360,7 +360,7 @@ MonoBehaviour:
   speed: 5
   turnSpeed: 100
   power: 1
-  expValue: 200
+  expValue: 1000
   player: {fileID: 2095440841}
   attackDistance: 1.5
   wanderDistance: 5
@@ -3556,7 +3556,7 @@ Prefab:
     - target: {fileID: 114506040469579570, guid: 62191d702345ff743911603ea1596e2a,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 224058087635580170, guid: 62191d702345ff743911603ea1596e2a,
         type: 2}
@@ -3872,6 +3872,31 @@ Prefab:
     - target: {fileID: 1642781987283966, guid: 62191d702345ff743911603ea1596e2a, type: 2}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114506040469579570, guid: 62191d702345ff743911603ea1596e2a,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114506040469579570, guid: 62191d702345ff743911603ea1596e2a,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114506040469579570, guid: 62191d702345ff743911603ea1596e2a,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 2066503046}
+    - target: {fileID: 114506040469579570, guid: 62191d702345ff743911603ea1596e2a,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: ScaleEnemies
+      objectReference: {fileID: 0}
+    - target: {fileID: 114506040469579570, guid: 62191d702345ff743911603ea1596e2a,
+        type: 2}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 62191d702345ff743911603ea1596e2a, type: 2}

@@ -69,7 +69,7 @@ public class Enemy : MonoBehaviour
         minZ = transform.position.z - wanderDistance;
         maxZ = transform.position.z + wanderDistance;
 
-        enemyCount.IncrementCount();
+        enemyCount.IncrementCount(transform.gameObject);
 
         weapon.power = 0;
     }
@@ -201,12 +201,36 @@ public class Enemy : MonoBehaviour
         transform.position += transform.forward * speed * Time.deltaTime;
     }
 
+    //Increment all stats
+    public void ScaleStats()
+    {
+        bool healthFull = false;
+        if(currHealth == maxHealth)
+        {
+            healthFull = true;
+        }
+
+        maxHealth++;
+
+        if(healthFull)
+        {
+            currHealth = maxHealth;
+        }
+
+        healthBar.GetComponent<Slider>().maxValue = maxHealth;
+        healthBar.GetComponent<Slider>().value = currHealth;
+        
+        speed++;
+
+        power++;
+    }
+
     IEnumerator Die()
     {
         GetComponentInChildren<Animator>().SetBool("isDying", true);
         isDead = true;
 
-        enemyCount.DecrementCount();
+        enemyCount.DecrementCount(transform.gameObject);
 
         player.GetComponent<Player>().IncrementExp(expValue);
 

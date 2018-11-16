@@ -27,6 +27,11 @@ public class PlayerStats
 
     private PlayerStats()
     {
+        HP = 10;
+        Speed = 8;
+        Power = 2;
+        Jump = 12;
+
         Level = 1;
         CurrExp = 0;
         MaxExp = 1000;
