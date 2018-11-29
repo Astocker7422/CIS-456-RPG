@@ -68,6 +68,8 @@ public class Player : MonoBehaviour
         expBar.value = exp;
 
         expText.text = exp + " / " + expTilLvl;
+
+        Debug.Log(currHealth);
     }
 
     void Update()
@@ -178,6 +180,7 @@ public class Player : MonoBehaviour
 
         currHealth -= damage;
         healthBar.value = currHealth;
+        Debug.Log(currHealth);
 
         hitTimer = 0;
         canHit = false;
@@ -217,7 +220,7 @@ public class Player : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Enemy Weapon"))
         {
-            TakeDamage(other.gameObject.GetComponent<EnemyWeapon>().enemy.power);
+            TakeDamage(other.gameObject.GetComponent<EnemyWeapon>().power);
 
             float force = 2;
             float height = 2;

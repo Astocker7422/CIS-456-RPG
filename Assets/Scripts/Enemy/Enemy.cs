@@ -42,6 +42,9 @@ public class Enemy : MonoBehaviour
     private float destTimer;
     private float destTime;
 
+    private float respawnTimer;
+    private float respawnTime;
+
     private float minX;
     private float maxX;
     private float minZ;
@@ -52,6 +55,9 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         currHealth = maxHealth;
+        healthBar.GetComponent<Slider>().maxValue = maxHealth;
+        healthBar.GetComponent<Slider>().value = currHealth;
+
         hitTime = 0.5f;
         hitTimer = 0;
         attackTime = 2f;
@@ -62,6 +68,8 @@ public class Enemy : MonoBehaviour
         inCombat = false;
         destTime = 3;
         destTimer = 0;
+        respawnTime = 60;
+        respawnTimer = 0;
         wanderDestination = transform.position;
 
         minX = transform.position.x - wanderDistance;
@@ -69,7 +77,7 @@ public class Enemy : MonoBehaviour
         minZ = transform.position.z - wanderDistance;
         maxZ = transform.position.z + wanderDistance;
 
-        enemyCount.IncrementCount(transform.gameObject);
+        enemyCount.AddEnemy(transform.gameObject);
 
         weapon.power = 0;
     }
@@ -111,6 +119,19 @@ public class Enemy : MonoBehaviour
                 Patrol();
             }
         }
+        else
+        {
+            if(respawnTimer >= respawnTime)
+            {
+                isDead = false;
+                Activate();
+                respawnTimer = 0;
+                GetComponentInChildren<Animator>().SetBool("isDying", false);
+
+                currHealth = maxHealth;
+                healthBar.GetComponent<Slider>().value = currHealth;
+            }
+        }
     }
 
     void LateUpdate()
@@ -125,6 +146,11 @@ public class Enemy : MonoBehaviour
         else
         {
             destTimer += Time.deltaTime;
+        }
+
+        if(isDead)
+        {
+            respawnTimer += Time.deltaTime;
         }
     }
 
@@ -223,6 +249,8 @@ public class Enemy : MonoBehaviour
         speed++;
 
         power++;
+
+        expValue += 50;
     }
 
     IEnumerator Die()
@@ -230,12 +258,32 @@ public class Enemy : MonoBehaviour
         GetComponentInChildren<Animator>().SetBool("isDying", true);
         isDead = true;
 
-        enemyCount.DecrementCount(transform.gameObject);
+        enemyCount.KillCount(transform.gameObject);
 
         player.GetComponent<Player>().IncrementExp(expValue);
 
         yield return new WaitForSeconds(5);
 
-        Destroy(this.gameObject);
+        Deactivate();
+    }
+
+    private void Deactivate()
+    {
+        foreach(Transform child in transform)
+        {
+            child.gameObject.SetActive(false);
+        }
+
+        GetComponent<CapsuleCollider>().enabled = false;
+    }
+
+    private void Activate()
+    {
+        foreach (Transform child in transform)
+        {
+            child.gameObject.SetActive(true);
+        }
+
+        GetComponent<CapsuleCollider>().enabled = true;
     }
 }

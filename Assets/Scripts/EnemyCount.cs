@@ -5,8 +5,12 @@ using TMPro;
 
 public class EnemyCount : MonoBehaviour
 {
+    public GameObject boss;
+
     //The number of enemies in the level
     private int count;
+
+    private int enemiesKilled;
 
     //List of all enemies in scene
     private List<GameObject> enemyList;
@@ -19,31 +23,35 @@ public class EnemyCount : MonoBehaviour
         enemyList = new List<GameObject>();
 
         text = GetComponent<TextMeshProUGUI>();
+
+        text.text = "Enemies Defeated: 0";
+    }
+
+    void Update()
+    {
+        if(!boss.activeInHierarchy)
+        {
+            if(enemiesKilled >= 1)
+            {
+                boss.SetActive(true);
+            }
+        }
     }
     
-    //Increment the enemy count on the UI
-	public void IncrementCount(GameObject enemy)
+    //Add enemy to list
+	public void AddEnemy(GameObject enemy)
     {
-        if(text == null)
-        {
-            text = GetComponent<TextMeshProUGUI>();
-        }
-
         count++;
-        
-        text.text = "Enemies: " + count.ToString();
 
         enemyList.Add(enemy);
     }
 
-    //Decrement the enemy count on the UI
-    public void DecrementCount(GameObject enemy)
+    //Increment the enemy kill count on the UI
+    public void KillCount(GameObject enemy)
     {
-        count--;
+        enemiesKilled++;
 
-        text.text = "Enemies: " + count.ToString();
-
-        enemyList.Remove(enemy);
+        text.text = "Enemies Defeated: " + enemiesKilled.ToString();
     }
 
     //Increases all enemy stats when player levels up

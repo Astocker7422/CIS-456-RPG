@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyCollider : MonoBehaviour
 {
     public Enemy enemy;
+    public Boss boss;
     public SphereCollider lineOfSight;
 
     private bool playerInSight;
@@ -16,7 +17,17 @@ public class EnemyCollider : MonoBehaviour
 
     void Update()
     {
-        if (playerInSight) enemy.MoveToPlayer();
+        if (playerInSight)
+        {
+            if (enemy != null)
+            {
+                enemy.MoveToPlayer();
+            }
+            else
+            {
+                boss.MoveToPlayer();
+            }
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -24,7 +35,14 @@ public class EnemyCollider : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             playerInSight = true;
-            enemy.inCombat = true;
+            if (enemy != null)
+            {
+                enemy.inCombat = true;
+            }
+            else
+            {
+                boss.inCombat = true;
+            }
         }
     }
 
@@ -33,8 +51,16 @@ public class EnemyCollider : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             playerInSight = false;
-            enemy.inCombat = false;
-            enemy.GetComponent<Animator>().SetBool("isMoving", false);
+            if (enemy != null)
+            {
+                enemy.inCombat = true;
+                enemy.GetComponent<Animator>().SetBool("isMoving", false);
+            }
+            else
+            {
+                boss.inCombat = true;
+                boss.GetComponent<Animator>().SetBool("isMoving", false);
+            }
         }
     }
 }
