@@ -28,16 +28,12 @@ public class LevelUpCanvas : MonoBehaviour
         PowerInput = PowerSpin.transform.Find("Value Text").GetComponent<TMPro.TMP_InputField>();
         JumpInput = JumpSpin.transform.Find("Value Text").GetComponent<TMPro.TMP_InputField>();
     }
-	
-	//void Update ()
-    //{
-		
-	//}
 
     public void SetHP(int value)
     {
         HPInput.text = value.ToString();
         HPSpin.minValue = value;
+        HPSpin.maxValue = value + 5;
         HPSpin.value = value;
     }
 
@@ -45,6 +41,7 @@ public class LevelUpCanvas : MonoBehaviour
     {
         SpeedInput.text = value.ToString();
         SpeedSpin.minValue = value;
+        SpeedSpin.maxValue = value + 5;
         SpeedSpin.value = value;
     }
 
@@ -52,6 +49,7 @@ public class LevelUpCanvas : MonoBehaviour
     {
         PowerInput.text = value.ToString();
         PowerSpin.minValue = value;
+        PowerSpin.maxValue = value + 5;
         PowerSpin.value = value;
     }
 
@@ -59,6 +57,7 @@ public class LevelUpCanvas : MonoBehaviour
     {
         JumpInput.text = value.ToString();
         JumpSpin.minValue = value;
+        JumpSpin.maxValue = value + 5;
         JumpSpin.value = value;
     }
 

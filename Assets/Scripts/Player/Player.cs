@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     public Quaternion respawnRotation;
     public Slider healthBar;
     public bool isPaused;
+    public GameObject mainCamera;
     public Weapon weapon;
     public Animator anim;
     public Slider expBar;
@@ -48,7 +49,7 @@ public class Player : MonoBehaviour
         currHealth = maxHealth;
         defaultSpeed = speed;
         rigid = GetComponent<Rigidbody>();
-        hitTime = 1f;
+        hitTime = 2f;
         hitTimer = 0;
         canHit = true;
         anim = GetComponentInChildren<Animator>();
@@ -69,7 +70,41 @@ public class Player : MonoBehaviour
 
         expText.text = exp + " / " + expTilLvl;
 
-        Debug.Log(currHealth);
+        Paused(true);
+    }
+
+    void OnLevelWasLoaded()
+    {
+        maxHealth = PlayerStats.Instance().HP;
+        speed = PlayerStats.Instance().Speed;
+        power = PlayerStats.Instance().Power;
+        jumpSpeed = PlayerStats.Instance().Jump * 10;
+
+        currHealth = maxHealth;
+        defaultSpeed = speed;
+        rigid = GetComponent<Rigidbody>();
+        hitTime = 2f;
+        hitTimer = 0;
+        canHit = true;
+        anim = GetComponentInChildren<Animator>();
+        jumpTimer = 0.6f;
+        jumpTime = jumpTimer;
+        isDead = false;
+        isMoving = false;
+
+        expText = expBar.gameObject.transform.Find("Value Text").GetComponent<TMPro.TextMeshProUGUI>();
+
+        level = PlayerStats.Instance().Level;
+
+        exp = PlayerStats.Instance().CurrExp;
+        expTilLvl = PlayerStats.Instance().MaxExp;
+
+        expBar.maxValue = expTilLvl;
+        expBar.value = exp;
+
+        expText.text = exp + " / " + expTilLvl;
+
+        Paused(true);
     }
 
     void Update()
@@ -132,10 +167,14 @@ public class Player : MonoBehaviour
     {
         if (horizontal != 0f || vertical != 0f)
         {
+            anim.SetBool("IsAttacking", false);
+
             Vector3 direction = Camera.main.transform.TransformDirection(new Vector3(horizontal, 0, vertical));
             rigid.velocity = new Vector3(direction.x, rigid.velocity.y, direction.z);
 
             transform.rotation = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0);
+
+            isMoving = true;
 
             if (isGrounded)
             {
@@ -145,6 +184,8 @@ public class Player : MonoBehaviour
         }
         else
         {
+            isMoving = false;
+
             anim.SetBool("IsWalking", false);
         }
     }
@@ -166,10 +207,6 @@ public class Player : MonoBehaviour
     void OnCollisionEnter(Collision coll)
     {
         rigid.angularVelocity = new Vector3(0, 0, 0);
-        //if (coll.gameObject.CompareTag("Enemy"))
-        //{
-        //    TakeDamage(coll.collider.gameObject.GetComponent<Enemy>().power);
-        //}
     }
 
     void TakeDamage(float damage)
@@ -180,7 +217,6 @@ public class Player : MonoBehaviour
 
         currHealth -= damage;
         healthBar.value = currHealth;
-        Debug.Log(currHealth);
 
         hitTimer = 0;
         canHit = false;
@@ -290,7 +326,7 @@ public class Player : MonoBehaviour
     private void ActivateStatCanvas()
     {
         Time.timeScale = 0;
-        isPaused = true;
+        Paused(true);
 
         statCanvas.SetActive(true);
 
@@ -323,6 +359,13 @@ public class Player : MonoBehaviour
         statCanvas.SetActive(false);
 
         Time.timeScale = 1;
-        isPaused = false;
+        Paused(false);
+    }
+
+    //Pauses player and turns off main camera
+    public void AllowOtherCamera(bool allow)
+    {
+        mainCamera.SetActive(!allow);
+        Paused(allow);
     }
 }

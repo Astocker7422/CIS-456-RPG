@@ -7,10 +7,16 @@ using UnityEngine.SceneManagement;
 //Attached to empty object
 public class SceneLoader : MonoBehaviour
 {
-    //Load the demo scene
+    //Load the Outskirts scene
     public void LoadOutskirts()
     {
         SceneManager.LoadScene("Outskirts");
+    }
+
+    //Load the City scene
+    public void LoadCity()
+    {
+        SceneManager.LoadScene("City");
     }
 
     //Load the main menu scene

@@ -8,7 +8,10 @@ public class Billboard : MonoBehaviour
 {
     void Update()
     {
-        //Make object face the camera
-        transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward, Camera.main.transform.rotation * Vector3.up);
+        if(Camera.main != null)
+        {
+            //Make object face the camera
+            transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward, Camera.main.transform.rotation * Vector3.up);
+        }
     }
 }

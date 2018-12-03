@@ -38,7 +38,14 @@ public class Weapon : MonoBehaviour
             if (coll.gameObject.CompareTag("Enemy"))
             {
                 //Apply damage to the enemy
-                coll.gameObject.GetComponent<Enemy>().TakeDamage(player.power);
+                if (coll.gameObject.GetComponent<Enemy>())
+                {
+                    coll.gameObject.GetComponent<Enemy>().TakeDamage(player.power);
+                }
+                else
+                {
+                    coll.gameObject.GetComponent<Boss>().TakeDamage(player.power);
+                }
             }
         }
     }

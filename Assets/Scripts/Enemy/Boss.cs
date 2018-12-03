@@ -24,6 +24,8 @@ public class Boss : MonoBehaviour
 
     public bool inCombat;
 
+    private Animator animator;
+
     private float currHealth;
 
     private float hitTime;
@@ -39,6 +41,8 @@ public class Boss : MonoBehaviour
 
     void Start()
     {
+        animator = GetComponent<Animator>();
+
         currHealth = maxHealth;
         healthBar.GetComponent<Slider>().maxValue = maxHealth;
         healthBar.GetComponent<Slider>().value = currHealth;
@@ -52,9 +56,7 @@ public class Boss : MonoBehaviour
         isDead = false;
         inCombat = false;
 
-        enemyCount.AddEnemy(transform.gameObject);
-
-        weapon.power = 0;
+        weapon.power = power;
     }
 
     void Update()
@@ -67,8 +69,7 @@ public class Boss : MonoBehaviour
                 {
                     if (isAttacking == false && attackTimer >= attackTime)
                     {
-                        GetComponentInChildren<Animator>().SetBool("isAttacking", true);
-                        weapon.power = power;
+                        animator.SetBool("isAttacking", true);
                         isAttacking = true;
                         attackTimer = 0;
                     }
@@ -76,19 +77,30 @@ public class Boss : MonoBehaviour
                     {
                         if (attackTimer > 1)
                         {
-                            GetComponentInChildren<Animator>().SetBool("isAttacking", false);
-                            weapon.power = 0;
+                            animator.SetBool("isAttacking", false);
                             isAttacking = false;
                         }
                     }
                 }
                 else
                 {
-                    GetComponentInChildren<Animator>().SetBool("isAttacking", false);
-                    weapon.power = 0;
+                    animator.SetBool("isAttacking", false);
                     isAttacking = false;
                 }
             }
+
+            if(animator.GetCurrentAnimatorStateInfo(0).IsName("mutant_Punching"))
+            {
+                weapon.GetComponent<BoxCollider>().enabled = true;
+            }
+            else
+            {
+                weapon.GetComponent<BoxCollider>().enabled = false;
+            }
+        }
+        else
+        {
+            weapon.power = 0;
         }
     }
 
