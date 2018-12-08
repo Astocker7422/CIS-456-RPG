@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*----------------------------------------------------------------------------------------
+     StatPlayButton - Controls play button on upgrade UI
+----------------------------------------------------------------------------------------*/
 public class StatPlayButton : MonoBehaviour
 {
     private AttributePool pool;
@@ -15,6 +18,7 @@ public class StatPlayButton : MonoBehaviour
 
 	void Start ()
     {
+        //Access attribute point pool, play button, and spin controls
         pool = GetComponent<AttributePool>();
         playButton = transform.FindDeepChild("Play Button").GetComponent<Button>();
 
@@ -26,15 +30,12 @@ public class StatPlayButton : MonoBehaviour
 	
 	void Update ()
     {
+        //Activate the button if all points used
+        //Deactivate if not
 		if(!playButton.interactable)
         {
             if(pool.value == 0)
             {
-                PlayerStats.Instance().HP = HPSpin.value;
-                PlayerStats.Instance().Speed = SpeedSpin.value;
-                PlayerStats.Instance().Power = PowerSpin.value;
-                PlayerStats.Instance().Jump = JumpSpin.value;
-
                 playButton.interactable = true;
             }
         }
@@ -46,4 +47,13 @@ public class StatPlayButton : MonoBehaviour
             }
         }
 	}
+
+    //Update PlayerStats class
+    public void ApplyStats()
+    {
+        PlayerStats.Instance().HP = HPSpin.value;
+        PlayerStats.Instance().Speed = SpeedSpin.value;
+        PlayerStats.Instance().Power = PowerSpin.value;
+        PlayerStats.Instance().Jump = JumpSpin.value;
+    }
 }

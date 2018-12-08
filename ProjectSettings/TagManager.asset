@@ -9,6 +9,8 @@ TagManager:
   - Wall
   - Ground
   - Weapon
+  - Bomb
+  - AggroCollider
   layers:
   - Default
   - TransparentFX

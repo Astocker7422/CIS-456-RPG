@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//Controls behavior of the player's weapon object
-//Attached to the player's weapon object
+/*----------------------------------------------------------------------------------------
+     Weapon - Controls behavior of player's weapon object
+----------------------------------------------------------------------------------------*/
 public class Weapon : MonoBehaviour
 {
     //The player holding the weapon
@@ -46,6 +47,10 @@ public class Weapon : MonoBehaviour
                 {
                     coll.gameObject.GetComponent<Boss>().TakeDamage(player.power);
                 }
+            }
+            if(coll.gameObject.CompareTag("Bomb"))
+            {
+                coll.gameObject.GetComponent<Bomb>().TakeDamage(player.power);
             }
         }
     }

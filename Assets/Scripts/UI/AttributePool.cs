@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+/*----------------------------------------------------------------------------------------
+     AttributePool - Controls behavior of attribute point pool UI on upgrade screens
+----------------------------------------------------------------------------------------*/
 public class AttributePool : MonoBehaviour
 {
     public int value;
 
     private TextMeshProUGUI text;
 
-	void Start ()
+	void Awake()
     {
         text = transform.Find("Text").GetComponent<TextMeshProUGUI>();
 
@@ -56,5 +59,11 @@ public class AttributePool : MonoBehaviour
         {
             text.text = value.ToString();
         }
+    }
+
+    public void SetValue(int newValue)
+    {
+        value = newValue;
+        text.text = value.ToString();
     }
 }

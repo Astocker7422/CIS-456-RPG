@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-//Controls which scene is loaded
-//Attached to empty object
+/*----------------------------------------------------------------------------------------
+     SceneLoader - Provides methods for scenes to be loaded
+----------------------------------------------------------------------------------------*/
 public class SceneLoader : MonoBehaviour
 {
     //Load the Outskirts scene

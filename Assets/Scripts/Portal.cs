@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*----------------------------------------------------------------------------------------
+     Portal - Controls portal in Outskirts level
+----------------------------------------------------------------------------------------*/
 public class Portal : MonoBehaviour
 {
     //Indicates if the portal to the next level is passable

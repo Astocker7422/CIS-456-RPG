@@ -2,12 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*----------------------------------------------------------------------------------------
+     EnemyCollider - Controls enemy's aggro trigger collider
+----------------------------------------------------------------------------------------*/
 public class EnemyCollider : MonoBehaviour
 {
+    //The enemy or boss this is attached to
     public Enemy enemy;
     public Boss boss;
+
+    //The sphere collider attached to this object
     public SphereCollider lineOfSight;
 
+    //Indicates if the player is in range
     private bool playerInSight;
 
     void Start()
@@ -17,8 +24,10 @@ public class EnemyCollider : MonoBehaviour
 
     void Update()
     {
+        //If the player is in range
         if (playerInSight)
         {
+            //Call player pursuit function in appropriate script
             if (enemy != null)
             {
                 enemy.MoveToPlayer();

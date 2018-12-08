@@ -3,37 +3,80 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*----------------------------------------------------------------------------------------
+     Player - Handles all input by player and behavior of player character
+----------------------------------------------------------------------------------------*/
 public class Player : MonoBehaviour
 {
+    //Player stats
     public float maxHealth;
     public float speed;
     public float turnSpeed;
     public float jumpSpeed;
     public float power;
+
+    //Transform to respawn at
     public Vector3 respawn;
     public Quaternion respawnRotation;
+
+    //Player health bar
     public Slider healthBar;
+
+    //Indicates if player can move
     public bool isPaused;
+
+    //Canvas of pause menu
+    public GameObject pauseCanvas;
+
+    //Camera following player
     public GameObject mainCamera;
+
+    //Player's weapon
     public Weapon weapon;
+
+    //Animator component
     public Animator anim;
+
+    //Experience bar
     public Slider expBar;
+
+    //Level up canvas
     public GameObject statCanvas;
 
-
+    //Current health
     private float currHealth;
+
+    //Non-sprinting speed
     private float defaultSpeed;
+
+    //Indicates if player touching the ground
     private bool isGrounded;
+
+    //Distance from player to ground
     private float floorDist;
+
+    //Weapon's transform
     private Transform weaponTransform;
+
+    //Player's rigidbody
     private Rigidbody rigid;
+
+    //Timer and bool handling invincibility after getting hit
     private float hitTime;
     private float hitTimer;
     private bool canHit;
+
+    //Timer to fix double jumping
     private float jumpTimer;
     private float jumpTime;
+
+    //Indicates if player has died
     private bool isDead;
+
+    //Indicates if player if moving
     private bool isMoving;
+
+    //Variables handling level and experience
     private int level;
     private int exp;
     private int expTilLvl;
@@ -41,6 +84,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        //Initialize stats
         maxHealth = PlayerStats.Instance().HP;
         speed = PlayerStats.Instance().Speed;
         power = PlayerStats.Instance().Power;
@@ -48,48 +92,20 @@ public class Player : MonoBehaviour
 
         currHealth = maxHealth;
         defaultSpeed = speed;
+
         rigid = GetComponent<Rigidbody>();
+
         hitTime = 2f;
         hitTimer = 0;
         canHit = true;
+
         anim = GetComponentInChildren<Animator>();
+
         jumpTimer = 0.6f;
         jumpTime = jumpTimer;
+
         isDead = false;
-        isMoving = false;
 
-        expText = expBar.gameObject.transform.Find("Value Text").GetComponent<TMPro.TextMeshProUGUI>();
-
-        level = PlayerStats.Instance().Level;
-
-        exp = PlayerStats.Instance().CurrExp;
-        expTilLvl = PlayerStats.Instance().MaxExp;
-
-        expBar.maxValue = expTilLvl;
-        expBar.value = exp;
-
-        expText.text = exp + " / " + expTilLvl;
-
-        Paused(true);
-    }
-
-    void OnLevelWasLoaded()
-    {
-        maxHealth = PlayerStats.Instance().HP;
-        speed = PlayerStats.Instance().Speed;
-        power = PlayerStats.Instance().Power;
-        jumpSpeed = PlayerStats.Instance().Jump * 10;
-
-        currHealth = maxHealth;
-        defaultSpeed = speed;
-        rigid = GetComponent<Rigidbody>();
-        hitTime = 2f;
-        hitTimer = 0;
-        canHit = true;
-        anim = GetComponentInChildren<Animator>();
-        jumpTimer = 0.6f;
-        jumpTime = jumpTimer;
-        isDead = false;
         isMoving = false;
 
         expText = expBar.gameObject.transform.Find("Value Text").GetComponent<TMPro.TextMeshProUGUI>();
@@ -109,8 +125,10 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        //If the player can move and has not died
         if (!isPaused && !isDead)
         {
+            //Check for sprint
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 speed = defaultSpeed * 2;
@@ -120,8 +138,10 @@ public class Player : MonoBehaviour
                 speed = defaultSpeed;
             }
 
+            //If player is not moving and attack button pressed,
             if(Input.GetMouseButtonDown(0) && !isMoving)
             {
+                //Attack
                 anim.SetBool("IsAttacking",true);
             }
             else
@@ -129,31 +149,43 @@ public class Player : MonoBehaviour
                 anim.SetBool("IsAttacking", false);
             }
 
+            //Get inputs
             float horizontal = Input.GetAxis("Horizontal") * speed;
             float vertical = Input.GetAxis("Vertical") * speed;
 
+            //Apply movement if not attacking
             if(!weapon.isSwinging) Movement(horizontal, vertical);
 
+            //If the player is not attacking and jump button pressed,
             if (Input.GetKeyDown(KeyCode.Space) && !weapon.isSwinging)
             {
+                //If the player is on the ground and it has been long enough since last jump,
                 if (isGrounded && jumpTimer >= jumpTime)
                 {
+                    //Start jump
                     isGrounded = false;
                     StartCoroutine(Jump());
                     jumpTimer = 0;
                 }
+            }
+
+            if(Input.GetKeyDown(KeyCode.Escape))
+            {
+                ActivatePauseCanvas();
             }
         }
     }
 
     void LateUpdate()
     {
+        //Update invincibility timer and jump timer
         hitTimer += Time.deltaTime;
         if (hitTimer > hitTime) canHit = true;
 
         jumpTimer += Time.deltaTime;
     }
 
+    //Handles jump animation and physics
     IEnumerator Jump()
     {
         anim.SetBool("IsJumping", true);
@@ -163,6 +195,7 @@ public class Player : MonoBehaviour
         rigid.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
     }
 
+    //Applies movement to player using rigidbody
     void Movement(float horizontal, float vertical)
     {
         if (horizontal != 0f || vertical != 0f)
@@ -190,6 +223,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    //Set if the player can move
     public void Paused(bool paused)
     {
         isPaused = paused;
@@ -209,6 +243,7 @@ public class Player : MonoBehaviour
         rigid.angularVelocity = new Vector3(0, 0, 0);
     }
 
+    //Applies damage to player
     void TakeDamage(float damage)
     {
         if (!canHit) return;
@@ -266,6 +301,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    //Handles animation and respawn
     IEnumerator Die()
     {
         isDead = true;
@@ -292,21 +328,45 @@ public class Player : MonoBehaviour
         isDead = false;
     }
 
+    //Handles healing from health pack
+    public void Heal()
+    {
+        currHealth += maxHealth * 0.1f;
+
+        if(currHealth > maxHealth)
+        {
+            currHealth = maxHealth;
+        }
+
+        healthBar.value = currHealth;
+    }
+
+    //Returns true if health is full
+    public bool isHealthFull()
+    {
+        return currHealth == maxHealth;
+    }
+
+    //Returns player's level
     public int GetLevel()
     {
         return level;
     }
 
+    //Adds experience to player
     public void IncrementExp(int points)
     {
         exp += points;
         PlayerStats.Instance().CurrExp = exp;
 
+        //If the player reached a new level,
         if(exp >= expTilLvl)
         {
+            //Reset experience
             exp = 0;
             PlayerStats.Instance().CurrExp = exp;
 
+            //Increase experience needed to level up
             expTilLvl *= 2;
             PlayerStats.Instance().MaxExp = expTilLvl;
 
@@ -314,7 +374,8 @@ public class Player : MonoBehaviour
 
             level++;
             PlayerStats.Instance().Level = level;
-
+            
+            //Activate the level up canvas
             ActivateStatCanvas();
         }
 
@@ -323,6 +384,16 @@ public class Player : MonoBehaviour
         expText.text = exp + " / " + expTilLvl;
     }
 
+    //Activates pause menu UI and pauses the game
+    private void ActivatePauseCanvas()
+    {
+        Time.timeScale = 0;
+        Paused(true);
+
+        pauseCanvas.SetActive(true);
+    }
+
+    //Activates the level up canvas and passes it the player's current stats
     private void ActivateStatCanvas()
     {
         Time.timeScale = 0;
@@ -332,12 +403,13 @@ public class Player : MonoBehaviour
 
         LevelUpCanvas statScript = statCanvas.GetComponent<LevelUpCanvas>();
 
-        statScript.SetHP((int) maxHealth);
-        statScript.SetSpeed((int) speed);
-        statScript.SetPower((int) power);
-        statScript.SetJump((int) (jumpSpeed / 10));
+        statScript.SetHP(PlayerStats.Instance().HP);
+        statScript.SetSpeed(PlayerStats.Instance().Speed);
+        statScript.SetPower(PlayerStats.Instance().Power);
+        statScript.SetJump(PlayerStats.Instance().Jump);
     }
 
+    //Deactivates the level up canvas and applies the chosen upgrades
     public void DeactivateStatCanvas()
     {
         LevelUpCanvas statScript = statCanvas.GetComponent<LevelUpCanvas>();
@@ -347,8 +419,17 @@ public class Player : MonoBehaviour
         PlayerStats.Instance().Power = statScript.GetPower();
         PlayerStats.Instance().Jump = statScript.GetJump();
 
-
-        maxHealth = PlayerStats.Instance().HP;
+        //If the player's health is full when upgrading health,
+        if(isHealthFull())
+        {
+            //Also increase current health
+            maxHealth = PlayerStats.Instance().HP;
+            currHealth = maxHealth;
+        }
+        else
+        {
+            maxHealth = PlayerStats.Instance().HP;
+        }
         healthBar.maxValue = maxHealth;
         healthBar.value = currHealth;
 

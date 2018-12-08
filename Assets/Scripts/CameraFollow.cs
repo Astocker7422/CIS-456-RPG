@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*----------------------------------------------------------------------------------------
+     CameraFollow - Controls camera following player
+----------------------------------------------------------------------------------------*/
 public class CameraFollow : MonoBehaviour
 {
     public GameObject player;
@@ -49,7 +52,10 @@ public class CameraFollow : MonoBehaviour
                 {
                     if (!hit.collider.gameObject.CompareTag("Weapon") && !hit.collider.gameObject.CompareTag("Enemy Weapon"))
                     {
-                        transform.position = hit.point;
+                        if(!hit.collider.gameObject.CompareTag("AggroCollider"))
+                        {
+                            transform.position = hit.point;
+                        }
                     }
                 }
             }

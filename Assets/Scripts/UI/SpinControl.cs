@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*----------------------------------------------------------------------------------------
+     SpinControl - Controls behavior of spin controls in upgrade UI
+----------------------------------------------------------------------------------------*/
 public class SpinControl : MonoBehaviour
 {
     public int value;

@@ -3,53 +3,74 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*----------------------------------------------------------------------------------------
+     Enemy - Controls behavior of basic enemy in all levels
+----------------------------------------------------------------------------------------*/
 public class Enemy : MonoBehaviour
 {
+    //Stats
     public float maxHealth;
     public float speed;
     public float turnSpeed;
     public float power;
 
+    //Amount of experience to player
     public int expValue;
 
+    //The player
     public GameObject player;
 
+    //Distance from player to stop and attack
     public float attackDistance;
 
+    //Distance to wander while idle patrolling
     public float wanderDistance;
 
+    //Enemy's weapon
     public EnemyWeapon weapon;
 
+    //Enemy's health bar
     public GameObject healthBar;
 
+    //UI enemy count
     public EnemyCount enemyCount;
 
+    //Indicates if enemy in combat
     public bool inCombat;
 
+    //Enemy's current health
     private float currHealth;
 
+    //Timer to handle invincibility after hit
     private float hitTime;
     private float hitTimer;
 
+    //Timer to handle attack speed
     private float attackTime;
     private float attackTimer;
 
+    //Indicates if boss can be hit and attack, respectively
     private bool canHit;
     private bool isAttacking;
 
+    //Indicates if boss has died
     private bool isDead;
 
+    //Timer to control when to patrol to a new destination
     private float destTimer;
     private float destTime;
 
+    //Timer controlling respawn
     private float respawnTimer;
     private float respawnTime;
 
+    //Defines circle to patrol in
     private float minX;
     private float maxX;
     private float minZ;
     private float maxZ;
 
+    //Destination during idle patrolling
     private Vector3 wanderDestination;
 
     void Start()
@@ -60,16 +81,24 @@ public class Enemy : MonoBehaviour
 
         hitTime = 0.5f;
         hitTimer = 0;
+
         attackTime = 2f;
         attackTimer = attackTime;
+
         canHit = true;
+
         isAttacking = false;
+
         isDead = false;
+
         inCombat = false;
+
         destTime = 3;
         destTimer = 0;
+
         respawnTime = 60;
         respawnTimer = 0;
+
         wanderDestination = transform.position;
 
         minX = transform.position.x - wanderDistance;
@@ -77,21 +106,26 @@ public class Enemy : MonoBehaviour
         minZ = transform.position.z - wanderDistance;
         maxZ = transform.position.z + wanderDistance;
 
-        enemyCount.AddEnemy(transform.gameObject);
+        if(enemyCount != null) enemyCount.AddEnemy(transform.gameObject);
 
         weapon.power = 0;
     }
 
     void Update()
     {
+        //If the enemy is not dead,
         if (!isDead)
         {
+            //If the enemy is in combat,
             if (inCombat)
             {
+                //If the enemy is close enough to the player,
                 if (Vector3.Distance(transform.position, player.transform.position) <= attackDistance)
                 {
+                    //If the enemy is not attacking and it is time to attack,
                     if (isAttacking == false && attackTimer >= attackTime)
                     {
+                        //Attack animation and indicate attack
                         GetComponentInChildren<Animator>().SetBool("isAttacking", true);
                         weapon.power = power;
                         isAttacking = true;
@@ -99,8 +133,10 @@ public class Enemy : MonoBehaviour
                     }
                     else
                     {
+                        //If a second has passed since the attack,
                         if (attackTimer > 1)
                         {
+                            //Stop animation and indicate attack over
                             GetComponentInChildren<Animator>().SetBool("isAttacking", false);
                             weapon.power = 0;
                             isAttacking = false;
@@ -109,6 +145,7 @@ public class Enemy : MonoBehaviour
                 }
                 else
                 {
+                    //Stop animation and indicate attack over
                     GetComponentInChildren<Animator>().SetBool("isAttacking", false);
                     weapon.power = 0;
                     isAttacking = false;
@@ -116,11 +153,13 @@ public class Enemy : MonoBehaviour
             }
             else
             {
+                //Patrol if not in combat
                 Patrol();
             }
         }
         else
         {
+            //Respawn if time passed
             if(respawnTimer >= respawnTime)
             {
                 isDead = false;
@@ -136,24 +175,31 @@ public class Enemy : MonoBehaviour
 
     void LateUpdate()
     {
+        //Update invincibility timer
         hitTimer += Time.deltaTime;
         if (hitTimer > hitTime) canHit = true;
 
+        //If the enemy is in combat
         if (inCombat)
         {
+            //Update attacking timer
             attackTimer += Time.deltaTime;
         }
         else
         {
+            //Update patrol timer
             destTimer += Time.deltaTime;
         }
 
+        //If the enemy is dead,
         if(isDead)
         {
+            //Update respawn timer
             respawnTimer += Time.deltaTime;
         }
     }
 
+    //Applies damage to enemy
     public void TakeDamage(float damage)
     {
         if (!canHit || isDead) return;
@@ -172,6 +218,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    //Controls idle patrol behavior
     private void Patrol()
     {
         if (destTimer >= destTime)
@@ -202,6 +249,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    //Controls pursuit of player behavior
     public void MoveToPlayer()
     {
         if (isAttacking || Vector3.Distance(transform.position, player.transform.position) <= attackDistance)
@@ -253,12 +301,13 @@ public class Enemy : MonoBehaviour
         expValue += 50;
     }
 
+    //Handles behavior on death
     IEnumerator Die()
     {
         GetComponentInChildren<Animator>().SetBool("isDying", true);
         isDead = true;
 
-        enemyCount.KillCount(transform.gameObject);
+        if (enemyCount != null) enemyCount.KillCount(transform.gameObject);
 
         player.GetComponent<Player>().IncrementExp(expValue);
 
@@ -267,6 +316,7 @@ public class Enemy : MonoBehaviour
         Deactivate();
     }
 
+    //Deactivates all components of enemy without deactivating this script
     private void Deactivate()
     {
         foreach(Transform child in transform)
@@ -277,6 +327,7 @@ public class Enemy : MonoBehaviour
         GetComponent<CapsuleCollider>().enabled = false;
     }
 
+    //Activates all components of enemy
     private void Activate()
     {
         foreach (Transform child in transform)
@@ -285,5 +336,7 @@ public class Enemy : MonoBehaviour
         }
 
         GetComponent<CapsuleCollider>().enabled = true;
+
+        healthBar.SetActive(false);
     }
 }

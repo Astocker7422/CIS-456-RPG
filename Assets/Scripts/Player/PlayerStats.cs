@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*----------------------------------------------------------------------------------------
+     PlayerStats - Stores stats and experience of player
+----------------------------------------------------------------------------------------*/
 public class PlayerStats
 {
     public int HP;

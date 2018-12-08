@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//Controls behavior of in world billboarded UI
-//Attached to any billboarded UI
+/*----------------------------------------------------------------------------------------
+     Billboard - Controls behavior of billboarded UI
+----------------------------------------------------------------------------------------*/
 public class Billboard : MonoBehaviour
 {
     void Update()
